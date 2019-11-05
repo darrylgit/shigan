@@ -1,8 +1,10 @@
 const fs = require("fs");
 
-const standardDifference = 14;
-const daylightSavingsDifference = 13;
+// Hours USA is behind South Korea
+const standardDifference = 14; // until March 8 2020
+const daylightSavingsDifference = 13; // March 8 - Nov 1 2020
 
+// Helper function to generate xx:xx-xx:xxKST, xx:xx-xx:xxEST
 const generateTimes = (
   startHourKst,
   minutes = "00",
@@ -25,30 +27,47 @@ const generateTimes = (
   return `${startTimeKst}-${endTimeKst}KST, ${startTimeEst}-${endTimeEst}EST`;
 };
 
-const b = generateTimes(13, "30");
-const e = generateTimes(10);
-const bb = generateTimes(12);
+// Shift outlines
+const b = {
+  times: generateTimes(13, "30"),
+  days: [7, 8, 14]
+};
 
-const bDays = [7, 8, 14];
-const eDays = [5, 6, 9, 12, 13, 15, 18, 19, 20, 21, 22, 25, 26, 27];
-const bbDays = [11];
+const bb = {
+  times: generateTimes(12),
+  days: [11]
+};
 
-const mlDays = [28];
+const e = {
+  times: generateTimes(10),
+  days: [5, 6, 9, 12, 13, 15, 18, 19, 20, 21, 22, 25, 26, 27]
+};
 
+const ml = {
+  times: "ML",
+  days: [28]
+};
+
+const shifts = [b, bb, e, ml];
+
+// A schedule array and the for loops that push data to it
 const schedule = [];
 
 for (let i = 5; i < 31; i++) {
-  if (bDays.includes(i)) {
-    schedule.push(`${i}일: ${b}`);
-  } else if (eDays.includes(i)) {
-    schedule.push(`${i}일: ${e}`);
-  } else if (bbDays.includes(i)) {
-    schedule.push(`${i}일: ${bb}`);
-  } else if (mlDays.includes(i)) {
-    schedule.push(`${i}일: ML`);
-  } else {
+  let dayPushedToSchedule = false;
+
+  for (let j = 0; j < shifts.length; j++) {
+    if (shifts[j].days.includes(i)) {
+      schedule.push(`${i}일: ${shifts[j].times}`);
+      dayPushedToSchedule = true;
+      break;
+    }
+  }
+
+  if (!dayPushedToSchedule) {
     schedule.push(`${i}일: DO`);
   }
 }
 
+// Join array with newlines, write to file
 fs.writeFileSync(`${__dirname}/output.txt`, schedule.join("\n"), "utf-8");
