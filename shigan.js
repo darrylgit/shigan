@@ -44,7 +44,7 @@ const e = {
 };
 
 const ml = {
-  times: "ML",
+  times: "Monthly Leave",
   days: [28]
 };
 
@@ -65,7 +65,7 @@ for (let i = 5; i < 31; i++) {
   }
 
   if (!dayPushedToSchedule) {
-    schedule.push(`${i}일: DO`);
+    schedule.push(`${i}일: Day Off`);
   }
 }
 
